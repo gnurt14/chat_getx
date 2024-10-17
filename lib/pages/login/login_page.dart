@@ -1,4 +1,5 @@
-import 'package:chat_getx/pages/home/home_page.dart';
+import 'package:chat_getx/models/chat.dart';
+import 'package:chat_getx/pages/chat/chat_page.dart';
 import 'package:chat_getx/pages/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,36 +9,36 @@ class LoginPage extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController textEditingController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
       ),
-      body: ListView.builder(
-        itemCount: controller.chatModels.length,
-        itemBuilder: (context, index) => InkWell(
-          onTap: () {
-            controller.sourceChat = controller.chatModels.removeAt(index);
-            Get.to(HomePage(chatModels: controller.chatModels, sourceChat: controller.sourceChat));
-          },
-          child: ListTile(
-            leading: const CircleAvatar(
-              radius: 23,
-              backgroundColor: Color(0xFF25D366),
-              child: Icon(
-                Icons.person,
-                size: 26,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(
-              controller.chatModels[index].name,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+      body: Column(
+        children: [
+          TextField(
+            controller: textEditingController,
           ),
-        ),
+          ElevatedButton(
+            onPressed: () {
+              controller.sourceChat = ChatModel(
+                name: "Box chat",
+                icon: "",
+                isGroup: false,
+                time: DateTime.now().toString(),
+                currentMessage: "currentMessage",
+                status: "",
+                id: 1,
+              );
+              Get.to(ChatPage(
+                chatModel: controller.sourceChat,
+                sourceChat: controller.sourceChat,
+                sender: textEditingController.text,
+              ));
+            },
+            child: const Text('Go to chat'),
+          ),
+        ],
       ),
     );
   }

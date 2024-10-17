@@ -55,21 +55,25 @@ class ChatController extends GetxController {
     print(" isconnect " + socket.connected.toString());
   }
 
-  void setMessage(String type, msg){
-    MessageModel messageModel = MessageModel(type: type, message: msg, time: DateTime.now().toString().substring(10,16));
+  void setMessage(String type, msg, String sender) {
+    MessageModel messageModel = MessageModel(
+      type: type,
+      message: msg,
+      time: DateTime.now().toString().substring(10, 16),
+      sender: sender,
+    );
     message.add(messageModel);
+
     update();
   }
 
-  void sendMessage(String message, int sourceId, int targetId){
-    setMessage('source', message);
-
+  void sendMessage(String message, int sourceId, int targetId, String sender) {
+    setMessage('source', message, sender);
     socket.emit('message', {
-      'message' : message,
-      'sourceId' : sourceId,
-      'targetId' : targetId,
+      'message': message,
+      'sourceId': sourceId,
+      'targetId': targetId,
     });
-
     update();
   }
 }

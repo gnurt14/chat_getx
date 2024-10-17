@@ -10,7 +10,6 @@ class LoginController extends GetxController{
   void onInit() {
     super.onInit();
     print('init chatController');
-    addUser();
   }
 
   @override
@@ -23,30 +22,4 @@ class LoginController extends GetxController{
     super.onClose();
   }
 
-  void addUser() {
-    chatModels.add(
-      ChatModel(
-        name: "Gnurt",
-        icon: 'icon',
-        isGroup: false,
-        time: '10:10',
-        currentMessage: "Hi everyone",
-        status: "online",
-        id: 1,
-      ),
-    );
-    chatModels.add(
-      ChatModel(
-        name: "Not Gnurt",
-        icon: 'icon',
-        isGroup: false,
-        time: '10:10',
-        currentMessage: "Hi everyone",
-        status: "online",
-        id: 2,
-      ),
-    );
-
-    update();
-  }
 }
