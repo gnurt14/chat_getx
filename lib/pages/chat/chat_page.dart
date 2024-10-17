@@ -1,11 +1,9 @@
 import 'package:chat_getx/models/chat.dart';
 import 'package:chat_getx/pages/chat/chat_controller.dart';
-import 'package:chat_getx/pages/widgets/own_message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:get/get.dart';
 
-import '../widgets/reply_card.dart';
 
 class ChatPage extends GetView<ChatController> {
   ChatPage({super.key, this.chatModel, this.sourceChat, required this.sender});

@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
 
-import '../../models/chat.dart';
+import '../../../models/chat.dart';
 
-class LoginController extends GetxController{
+class AuthController extends GetxController{
   late ChatModel sourceChat;
   List<ChatModel> chatModels = [];
+  static AuthController get instance => Get.find();
 
   @override
   void onInit() {
@@ -22,4 +23,7 @@ class LoginController extends GetxController{
     super.onClose();
   }
 
+  void registerUser(String email, String password){
+
+  }
 }

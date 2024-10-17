@@ -1,9 +1,11 @@
+import 'package:chat_getx/pages/auth/signup_page.dart';
 import 'package:chat_getx/pages/chat/chat_binding.dart';
 import 'package:chat_getx/pages/chat/chat_page.dart';
 import 'package:get/get.dart';
 
-import '../pages/login/login_binding.dart';
-import '../pages/login/login_page.dart';
+import '../pages/auth/binding/login_binding.dart';
+import '../pages/auth/login_page.dart';
+import '../pages/auth/binding/signup_binding.dart';
 
 part 'routes.dart';
 
@@ -13,13 +15,20 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.LOGIN,
-      page: () => LoginPage(),
+      page: () => const LoginPage(),
       binding: LoginBinding(),
     ),
     GetPage(
       name: _Paths.CHAT,
-      page: () => ChatPage(sender: "",),
+      page: () => ChatPage(
+        sender: "",
+      ),
       binding: ChatBinding(),
+    ),
+    GetPage(
+      name: _Paths.SIGNUP,
+      page: () => const SignUpPage(),
+      binding: SignUpBinding(),
     ),
   ];
 }
