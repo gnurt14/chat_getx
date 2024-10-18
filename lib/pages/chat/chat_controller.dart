@@ -38,8 +38,13 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
+    textController.dispose();
+    scrollController.dispose();
+    focusNode.dispose();
     super.onClose();
   }
+
+
 
   void sendMessage({
     required String message,
@@ -69,6 +74,11 @@ class ChatController extends GetxController {
         userName: senderData.name.toString(),
         receiverUserName: receiverData.name.toString(),
       );
+      print('send message');
+      textController.clear();
+      sendButton.value = false;
+      update();
+      print('textcontroller is clear');
     } catch (e){
 
     }
@@ -89,7 +99,7 @@ class ChatController extends GetxController {
 
     await _firestore
         .collection('users')
-        .doc(receiverData.name)
+        .doc(receiverData.uid)
         .collection('chats')
         .doc(_auth.currentUser!.uid)
         .set(receiverChatContact.toMap());
@@ -103,9 +113,9 @@ class ChatController extends GetxController {
 
     await _firestore
         .collection('users')
-        .doc(senderData.name)
+        .doc(senderData.uid)
         .collection('chats')
-        .doc(receiverData.name)
+        .doc(receiverData.uid)
         .set(senderChatContact.toMap());
   }
 

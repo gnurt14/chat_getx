@@ -3,7 +3,6 @@ import 'package:chat_getx/pages/chat/chat_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ChatPage extends GetView<ChatController> {
   final UserModel? receiver;
   final UserModel? sender;
@@ -71,13 +70,16 @@ class ChatPage extends GetView<ChatController> {
                             style: const TextStyle(fontSize: 10),
                             maxLines: null,
                             controller: messageController,
+                            focusNode: controller.focusNode,
                             decoration: const InputDecoration(
                                 hintText: 'Type a message...',
                                 border: OutlineInputBorder(),
                                 hintStyle: TextStyle(fontSize: 10)
                             ),
                             onSubmitted: (value) {
-
+                              if(messageController.text.trim().isNotEmpty){
+                                controller.sendMessage(message: messageController.text, receiverData: receiver!, senderData: sender!);
+                              }
                             },
                           ),
                         ),
@@ -88,6 +90,7 @@ class ChatPage extends GetView<ChatController> {
                               if(messageController.text.trim().isNotEmpty){
                                 controller.sendMessage(message: messageController.text, receiverData: receiver!, senderData: sender!);
                               }
+                              messageController.clear();
                             },
                             icon: const Icon(Icons.send, size: 16,),
                           ),
