@@ -1,6 +1,5 @@
 import 'package:chat_getx/pages/auth/repository/authentication_repository.dart';
 import 'package:chat_getx/pages/auth/signup_page.dart';
-import 'package:chat_getx/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -49,9 +48,6 @@ class LoginPage extends GetView<AuthController> {
             ElevatedButton(
               onPressed: () {
                 AuthenticationRepository.instance.loginWithEmailAndPassword(email.text, password.text);
-                if(context.mounted){
-                  Get.offAll(() => const HomePage());
-                }
               },
               child: const Text('Login'),
             ),

@@ -65,7 +65,7 @@ class AuthenticationRepository extends GetxController{
     try{
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-      return null;
+      Get.offAll(() => const HomePage());
     } on FirebaseAuthException catch (e){
       String message = '';
       if(e.code == 'invalid-email'){

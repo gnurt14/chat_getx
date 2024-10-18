@@ -6,18 +6,15 @@ import 'package:get/get.dart';
 
 
 class ChatPage extends GetView<ChatController> {
-  ChatPage({super.key, this.chatModel, this.sourceChat, required this.sender});
-
-  final ChatModel? chatModel;
-  final ChatModel? sourceChat;
   final String sender;
+  ChatPage({super.key, required this.sender});
+
 
   ChatController chatController = Get.put(ChatController());
   TextEditingController messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    print(sourceChat!.id);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(36),
@@ -39,7 +36,7 @@ class ChatPage extends GetView<ChatController> {
               ),
             ],
           ),
-          title: Text(chatModel!.name, style: const TextStyle(fontSize: 14),),
+          title: Text(sender, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
           centerTitle: true,
         ),
       ),
@@ -53,103 +50,58 @@ class ChatPage extends GetView<ChatController> {
             .of(context)
             .size
             .width,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          child: Column(
-            children: [
-              Expanded(
-                child: Obx(
-                      () =>
-                      ListView.separated(
-                        shrinkWrap: true,
-                        controller: controller.scrollController,
-                        itemCount: controller.message.length,
-                        itemBuilder: (context, index) {
-                          return (controller.message[index].sender == sender) ?
-                          ChatBubble(
-                            clipper: ChatBubbleClipper1(
-                              type: BubbleType.receiverBubble,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.blue[100],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Column(
+              children: [
+                Expanded(child: Text('')),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: TextField(
+                            style: const TextStyle(fontSize: 10),
+                            maxLines: null,
+                            controller: messageController,
+                            decoration: const InputDecoration(
+                                hintText: 'Type a message...',
+                                border: OutlineInputBorder(),
+                                hintStyle: TextStyle(fontSize: 10)
                             ),
-                            alignment: Alignment.topLeft,
-                            margin: const EdgeInsets.only(top: 5, bottom: 5),
-                            backGroundColor: Colors.yellow[100],
-                            child: Container(
-                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("${controller.message[index].sender}(you)", style: const TextStyle(fontSize: 10, color: Colors.grey),),
-                                  Text(controller.message[index].message),
-                                  Text(controller.message[index].time, style: const TextStyle(fontSize: 10, color: Colors.grey),),
-                                ],
-                              ),
-                            ),
-                          ) : ChatBubble(
-                            clipper: ChatBubbleClipper1(
-                                type: BubbleType.sendBubble),
-                            alignment: Alignment.topRight,
-                            margin: const EdgeInsets.only(top: 5, bottom: 5),
-                            backGroundColor: Colors.grey[100],
-                            child: Container(
-                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(controller.message[index].sender, style: const TextStyle(fontSize: 10, color: Colors.grey),),
-                                  Text(controller.message[index].message),
-                                  Text(controller.message[index].time, style: const TextStyle(fontSize: 10, color: Colors.grey),),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context,
-                            int index) => const SizedBox(height: 5,),
-                      ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 4,
-                        child: TextField(
-                          style: const TextStyle(fontSize: 10),
-                          maxLines: null,
-                          controller: messageController,
-                          decoration: const InputDecoration(
-                              hintText: 'Type a message...',
-                              border: OutlineInputBorder(),
-                              hintStyle: TextStyle(fontSize: 10)
-                          ),
-                          onSubmitted: (value) {
-                            controller.setMessage(
-                                'source', messageController.text, sender);
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: IconButton(
-                          onPressed: () {
-                            if (messageController.text
-                                .trim()
-                                .isNotEmpty) {
+                            onSubmitted: (value) {
                               controller.setMessage(
                                   'source', messageController.text, sender);
-                            }
-                          },
-                          icon: const Icon(Icons.send, size: 16,),
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () {
+                              if (messageController.text
+                                  .trim()
+                                  .isNotEmpty) {
+                                controller.setMessage(
+                                    'source', messageController.text, sender);
+                              }
+                            },
+                            icon: const Icon(Icons.send, size: 16,),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

@@ -93,7 +93,7 @@ class SignUpPage extends GetView<AuthController> {
                 ),
                 GestureDetector(
                   onTap: (){
-                    Get.off(() => LoginPage());
+                    Get.off(() => const LoginPage());
                   },
                   child: const Text(
                     'Log In',

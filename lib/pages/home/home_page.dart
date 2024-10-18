@@ -5,6 +5,8 @@ import 'package:chat_getx/widgets/user_box.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
+import '../chat/chat_page.dart';
+
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
 
@@ -21,14 +23,23 @@ class HomePage extends GetView<HomeController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
+              DrawerHeader(
+                decoration: const BoxDecoration(
                   color: Colors.blue,
                 ),
                 child: Row(
                   children: [
+                    const CircleAvatar(
+                      radius: 30,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     Text(
-                      'ChatApp socket',
+                      "${controller.getCurrentUser()?.email}",
+                      style: const TextStyle(
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
@@ -60,11 +71,27 @@ class HomePage extends GetView<HomeController> {
               } else {
                 final userList = snapshot.data ?? [];
                 return ListView.separated(
-                  itemBuilder: (context, index){
+                  itemBuilder: (context, index) {
                     final user = userList[index];
-                    return UserBox(userName: user.name.toString(), email: user.email.toString());
+                    if (user.email == controller.getCurrentUser()?.email) {
+                      return Container();
+                    }
+                    return GestureDetector(
+                      onTap: () {
+                        Get.to(
+                          () => ChatPage(
+                            sender: user.name.toString(),
+                          ),
+                        );
+                      },
+                      child: UserBox(
+                          userName: user.name.toString(),
+                          email: user.email.toString()),
+                    );
                   },
-                  separatorBuilder: (context, index) => const SizedBox(height: 5,),
+                  separatorBuilder: (context, index) => const SizedBox(
+                    height: 5,
+                  ),
                   itemCount: userList.length,
                 );
               }

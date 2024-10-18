@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 import '../../models/user.dart';
@@ -6,11 +7,18 @@ import '../../models/user.dart';
 class HomeController extends GetxController{
   static HomeController get instance => Get.find();
   final _fireStore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
 
   @override
   void onInit() {
     super.onInit();
   }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
 
   Future<List<UserModel>> fetchUser() async {
     List<UserModel> list = [];
@@ -22,4 +30,11 @@ class HomeController extends GetxController{
     });
     return list;
   }
+
+  User? getCurrentUser() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    return user;
+  }
+
 }
