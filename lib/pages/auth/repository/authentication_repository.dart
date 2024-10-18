@@ -22,10 +22,6 @@ class AuthenticationRepository extends GetxController{
     ever(firebaseUser, _setInitialScreen);
   }
 
-  // _setInitialScreen(User? user){
-  //   user == null ? Get.offAll(() => const LoginPage()) : Get.offAll(() => const HomePage());
-  // }
-
   _setInitialScreen(User? user) {
     if (user == null) {
       Get.offAll(() => const LoginPage());
@@ -42,6 +38,7 @@ class AuthenticationRepository extends GetxController{
       await _fireStore.collection('users').doc(data.user?.uid).set({
         'name': fullName,
         'email': data.user?.email,
+        'uid': _auth.currentUser?.uid,
       });
 
       return null;

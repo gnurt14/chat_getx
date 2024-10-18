@@ -12,6 +12,10 @@ class HomePage extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    UserModel? sender;
+    controller.getCurrentUser().then((value) {
+      sender = value;
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
@@ -36,7 +40,7 @@ class HomePage extends GetView<HomeController> {
                       width: 10,
                     ),
                     Text(
-                      "${controller.getCurrentUser()?.email}",
+                      "${sender?.name}",
                       style: const TextStyle(
                         fontSize: 14,
                       ),
@@ -59,7 +63,7 @@ class HomePage extends GetView<HomeController> {
         padding: const EdgeInsets.all(10.0),
         child: FutureBuilder<List<UserModel>>(
             future: controller.fetchUser(),
-            builder: (context, snapshot) {
+            builder: (context, snapshot){
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -73,15 +77,14 @@ class HomePage extends GetView<HomeController> {
                 return ListView.separated(
                   itemBuilder: (context, index) {
                     final user = userList[index];
-                    if (user.email == controller.getCurrentUser()?.email) {
+                    if (user.uid == sender?.uid) {
                       return Container();
                     }
                     return GestureDetector(
                       onTap: () {
+
                         Get.to(
-                          () => ChatPage(
-                            sender: user.name.toString(),
-                          ),
+                          () => ChatPage(receiver: user, sender: sender,),
                         );
                       },
                       child: UserBox(

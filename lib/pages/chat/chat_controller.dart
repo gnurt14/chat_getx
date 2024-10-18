@@ -1,8 +1,10 @@
+import 'package:chat_getx/models/chat.dart';
 import 'package:chat_getx/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../models/user.dart';
 
@@ -39,18 +41,111 @@ class ChatController extends GetxController {
     super.onClose();
   }
 
-  void setMessage(String type, msg, String sender) {
+  void sendMessage({
+    required String message,
+    required UserModel receiverData,
+    required UserModel senderData,
+  }) async {
+    try{
+      var timeSent = DateTime.now();
 
+      var userDataMap = await _firestore.collection('users').doc(receiverData.uid).get();
+      receiverData = UserModel.fromMap(userDataMap.data()!);
 
-    update();
+      _saveDataToContactSubCollection(
+        senderData: senderData,
+        receiverData: receiverData,
+        message: message,
+        timeSent: timeSent,
+      );
+
+      var messageId = const Uuid().v4();
+
+      _saveMessageToSubMessageCollection(
+        receiverId: receiverData.uid.toString(),
+        message: message,
+        timeSent: timeSent,
+        messageId: messageId,
+        userName: senderData.name.toString(),
+        receiverUserName: receiverData.name.toString(),
+      );
+    } catch (e){
+
+    }
   }
 
-  void sendMessage(String message, String receiverId, String senderId) async{
-    String timeSent = DateTime.now().toString();
+  void _saveDataToContactSubCollection({
+    required UserModel senderData,
+    required UserModel receiverData,
+    required String message,
+    required DateTime timeSent,
+  }) async {
+    var receiverChatContact = ChatModel(
+      name: senderData.name.toString(),
+      receiverUid: senderData.uid.toString(),
+      timeSent: timeSent.toString().substring(10, 16),
+      lastMessage: message,
+    );
 
-    UserModel receiverData;
-    var userDataMap = await _firestore.collection('users').doc(receiverId).get();
-    receiverData = UserModel.fromMap(userDataMap.data()!);
-    update();
+    await _firestore
+        .collection('users')
+        .doc(receiverData.name)
+        .collection('chats')
+        .doc(_auth.currentUser!.uid)
+        .set(receiverChatContact.toMap());
+
+    var senderChatContact = ChatModel(
+      name: receiverData.name.toString(),
+      receiverUid: receiverData.uid.toString(),
+      timeSent: timeSent.toString().substring(10, 16),
+      lastMessage: message,
+    );
+
+    await _firestore
+        .collection('users')
+        .doc(senderData.name)
+        .collection('chats')
+        .doc(receiverData.name)
+        .set(senderChatContact.toMap());
+  }
+
+  void _saveMessageToSubMessageCollection({
+    required String receiverId,
+    required String message,
+    required DateTime timeSent,
+    required String messageId,
+    required String userName,
+    required String receiverUserName,
+  }) async {
+    final messageM = MessageModel(
+      senderId: _auth.currentUser!.uid,
+      receiverId: receiverId,
+      message: message,
+      timeSent: timeSent,
+      messageId: messageId,
+      isSeen: false,
+    );
+
+    await _firestore
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .doc(messageId)
+        .set(
+          messageM.toMap(),
+        );
+
+    await _firestore
+        .collection('users')
+        .doc(receiverId)
+        .collection('chats')
+        .doc(_auth.currentUser!.uid)
+        .collection('messages')
+        .doc(messageId)
+        .set(
+          messageM.toMap(),
+        );
   }
 }

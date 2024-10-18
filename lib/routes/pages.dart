@@ -22,9 +22,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.CHAT,
-      page: () => ChatPage(
-        sender: "",
-      ),
+      page: () => ChatPage(),
       binding: ChatBinding(),
     ),
     GetPage(

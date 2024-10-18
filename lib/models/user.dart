@@ -3,13 +3,15 @@ import '../entities/user_entity.dart';
 class UserModel {
   String? name;
   String? email;
+  String? uid;
 
-  UserModel({this.name, this.email});
+  UserModel({this.name, this.email, this.uid});
 
   Map<String, dynamic> toMap() {
     return {
       'name': name,
       'email': email,
+      'uid': uid,
     };
   }
 
@@ -17,12 +19,14 @@ class UserModel {
     return UserModel(
       name: map['name'] ?? '',
       email: map['email'] ?? '',
+      uid: map['uid'] ?? '',
     );
   }
 
   UserModel.fromJson(Map<String, dynamic> data) {
     name = data['name'];
     email = data['email'];
+    uid = data['uid'];
   }
 }
 
@@ -31,6 +35,7 @@ extension UserModelX on UserModel {
     return UserEntity(
       email: email,
       name: name,
+      uid: uid,
     );
   }
 }

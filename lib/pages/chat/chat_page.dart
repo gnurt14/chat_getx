@@ -1,13 +1,13 @@
-import 'package:chat_getx/models/chat.dart';
+import 'package:chat_getx/models/user.dart';
 import 'package:chat_getx/pages/chat/chat_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:get/get.dart';
 
 
 class ChatPage extends GetView<ChatController> {
-  final String sender;
-  ChatPage({super.key, required this.sender});
+  final UserModel? receiver;
+  final UserModel? sender;
+  ChatPage({super.key,this.receiver, this.sender});
 
 
   ChatController chatController = Get.put(ChatController());
@@ -36,7 +36,7 @@ class ChatPage extends GetView<ChatController> {
               ),
             ],
           ),
-          title: Text(sender, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
+          title: Text(receiver!.name.toString(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
           centerTitle: true,
         ),
       ),
@@ -77,8 +77,7 @@ class ChatPage extends GetView<ChatController> {
                                 hintStyle: TextStyle(fontSize: 10)
                             ),
                             onSubmitted: (value) {
-                              controller.setMessage(
-                                  'source', messageController.text, sender);
+
                             },
                           ),
                         ),
@@ -86,11 +85,8 @@ class ChatPage extends GetView<ChatController> {
                           flex: 1,
                           child: IconButton(
                             onPressed: () {
-                              if (messageController.text
-                                  .trim()
-                                  .isNotEmpty) {
-                                controller.setMessage(
-                                    'source', messageController.text, sender);
+                              if(messageController.text.trim().isNotEmpty){
+                                controller.sendMessage(message: messageController.text, receiverData: receiver!, senderData: sender!);
                               }
                             },
                             icon: const Icon(Icons.send, size: 16,),

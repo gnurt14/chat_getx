@@ -56,25 +56,6 @@ class SignUpPage extends GetView<AuthController> {
             const SizedBox(
               height: 10,
             ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     controller.sourceChat = ChatModel(
-            //       name: "Box chat",
-            //       icon: "",
-            //       isGroup: false,
-            //       time: DateTime.now().toString(),
-            //       currentMessage: "currentMessage",
-            //       status: "",
-            //       id: 1,
-            //     );
-            //     Get.to(ChatPage(
-            //       chatModel: controller.sourceChat,
-            //       sourceChat: controller.sourceChat,
-            //       sender: email.text,
-            //     ));
-            //   },
-            //   child: const Text('Go to chat'),
-            // ),
             const SizedBox(
               height: 10,
             ),

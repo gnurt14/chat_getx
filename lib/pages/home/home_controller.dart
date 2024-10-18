@@ -31,10 +31,18 @@ class HomeController extends GetxController{
     return list;
   }
 
-  User? getCurrentUser() {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = auth.currentUser;
-    return user;
+  Future<UserModel?> getCurrentUser() async{
+    User? firebaseUser = _auth.currentUser;
+
+    if(firebaseUser != null){
+      DocumentSnapshot<Map<String, dynamic>> userDoc = await _fireStore.collection('users').doc(firebaseUser.uid).get();
+
+      if(userDoc.exists && userDoc.data() != null){
+        return UserModel.fromMap(userDoc.data()!);
+      }
+    }
+
+    return null;
   }
 
 }
