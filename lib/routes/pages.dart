@@ -1,6 +1,8 @@
 import 'package:chat_getx/pages/auth/signup_page.dart';
 import 'package:chat_getx/pages/chat/chat_binding.dart';
 import 'package:chat_getx/pages/chat/chat_page.dart';
+import 'package:chat_getx/pages/home/home_binding.dart';
+import 'package:chat_getx/pages/home/home_page.dart';
 import 'package:get/get.dart';
 
 import '../pages/auth/binding/login_binding.dart';
@@ -30,5 +32,9 @@ class AppPages {
       page: () => const SignUpPage(),
       binding: SignUpBinding(),
     ),
+    GetPage(
+        name: _Paths.HOME,
+        page: () => const HomePage(),
+        binding: HomeBinding()),
   ];
 }

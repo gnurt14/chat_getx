@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "209000338259",
+    "project_id": "booking-app-86dc6",
+    "storage_bucket": "booking-app-86dc6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209000338259:android:24a52d479314f15ca087a6",
+        "android_client_info": {
+          "package_name": "com.example.chat_getx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJG7_ZQ_KjL4cAFSAK7sbhWxZM8UvAP_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -18,7 +18,6 @@ class ChatPage extends GetView<ChatController> {
   @override
   Widget build(BuildContext context) {
     print(sourceChat!.id);
-    chatController.connect(sourceChat!.id);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(36),
