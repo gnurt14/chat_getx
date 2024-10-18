@@ -44,17 +44,39 @@ class ChatController extends GetxController {
     super.onClose();
   }
 
-
+  Stream<List<MessageModel>> getChatStream(String receiverId) {
+    return _firestore
+        .collection('users')
+        .doc(_auth.currentUser?.uid)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .orderBy('timeSent')
+        .snapshots()
+        .asyncMap((event) async {
+          List<MessageModel> messageList = [];
+          try{
+            for(var document in event.docs){
+              messageList.add(MessageModel.fromMap(document.data()));
+            }
+            return messageList;
+          } catch (e){
+            print('Error get chat stream $e');
+            return [];
+          }
+    });
+  }
 
   void sendMessage({
     required String message,
     required UserModel receiverData,
     required UserModel senderData,
   }) async {
-    try{
+    try {
       var timeSent = DateTime.now();
 
-      var userDataMap = await _firestore.collection('users').doc(receiverData.uid).get();
+      var userDataMap =
+          await _firestore.collection('users').doc(receiverData.uid).get();
       receiverData = UserModel.fromMap(userDataMap.data()!);
 
       _saveDataToContactSubCollection(
@@ -79,9 +101,7 @@ class ChatController extends GetxController {
       sendButton.value = false;
       update();
       print('textcontroller is clear');
-    } catch (e){
-
-    }
+    } catch (e) {}
   }
 
   void _saveDataToContactSubCollection({
