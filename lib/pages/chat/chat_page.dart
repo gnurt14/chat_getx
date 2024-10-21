@@ -1,3 +1,4 @@
+import 'package:chat_getx/models/chat.dart';
 import 'package:chat_getx/models/user.dart';
 import 'package:chat_getx/pages/chat/chat_controller.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +6,10 @@ import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:get/get.dart';
 
 class ChatPage extends GetView<ChatController> {
-  final UserModel? receiver;
+  final ChatModel? receiver;
   final UserModel? sender;
 
-  ChatPage({super.key, this.receiver, this.sender});
+  ChatPage({super.key,  this.receiver,  this.sender});
 
   ChatController chatController = Get.put(ChatController());
   TextEditingController messageController = TextEditingController();
@@ -53,7 +54,7 @@ class ChatPage extends GetView<ChatController> {
               children: [
                 Expanded( // Wrap the ListView in Expanded
                   child: StreamBuilder(
-                    stream: controller.getChatStream(receiver!.uid.toString()),
+                    stream: controller.getChatStream(receiver!.receiverUid.toString()),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
@@ -78,7 +79,13 @@ class ChatPage extends GetView<ChatController> {
                                   constraints: BoxConstraints(
                                     maxWidth: MediaQuery.of(context).size.width * 0.7,
                                   ),
-                                  child: Text(message.message),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(message.message),
+                                      Text(message.timeSent.toString().substring(10,16), style: const TextStyle(fontSize: 10),),
+                                    ],
+                                  ),
                                 ),
                               );
                             }
@@ -91,7 +98,13 @@ class ChatPage extends GetView<ChatController> {
                                 constraints: BoxConstraints(
                                   maxWidth: MediaQuery.of(context).size.width * 0.7,
                                 ),
-                                child: Text(message.message),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(message.message),
+                                    Text(message.timeSent.toString().substring(10,16), style: const TextStyle(fontSize: 10),),
+                                  ],
+                                ),
                               ),
                             );
                           },

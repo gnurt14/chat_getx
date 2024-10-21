@@ -1,9 +1,10 @@
+import 'package:chat_getx/models/chat.dart';
 import 'package:chat_getx/models/user.dart';
 import 'package:chat_getx/pages/auth/repository/authentication_repository.dart';
 import 'package:chat_getx/pages/home/home_controller.dart';
-import 'package:chat_getx/widgets/user_box.dart';
-import 'package:get/get.dart';
+import 'package:chat_getx/widgets/chat_box.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../chat/chat_page.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -16,8 +17,8 @@ class HomePage extends GetView<HomeController> {
         title: const Text('Dashboard'),
         centerTitle: true,
       ),
-      drawer: FutureBuilder<UserModel?>(
-        future: controller.getCurrentUser(),
+      drawer: StreamBuilder<List<UserModel>>(
+        stream: controller.getDrawerUser(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Drawer(
@@ -30,56 +31,69 @@ class HomePage extends GetView<HomeController> {
               ),
             );
           } else {
-            final sender = snapshot.data;
+            var listUser = snapshot.data ?? [];
+            final currentUser = controller.currentUser.value;
             return Drawer(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    DrawerHeader(
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const CircleAvatar(
-                            radius: 30,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                sender?.name ?? 'No name',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                sender?.email ?? 'No email',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  DrawerHeader(
+                    decoration: const BoxDecoration(
+                      color: Colors.blue,
                     ),
-                    ListTile(
-                      title: const Text('Log out'),
-                      leading: const Icon(Icons.logout),
-                      onTap: () {
-                        AuthenticationRepository.instance.logOut();
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const CircleAvatar(radius: 30),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              currentUser!.name.toString(),
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              currentUser.email.toString(),
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: listUser.length,
+                      itemBuilder: (context, index) {
+                        final user = listUser[index];
+                        if(user.uid == currentUser.uid){
+                          return Container();
+                        }
+                        return ListTile(
+                          title: Text(user.name.toString()),
+                          onTap: () => Get.to(() => ChatPage(
+                                receiver: ChatModel(
+                                  name: user.name.toString(),
+                                  receiverUid: user.uid.toString(),
+                                  timeSent: DateTime.now(),
+                                  lastMessage: '',
+                                ),
+                                sender: controller.currentUser.value,
+                              )),
+                        );
                       },
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text('Log out'),
+                    leading: const Icon(Icons.logout),
+                    onTap: () {
+                      AuthenticationRepository.instance.logOut();
+                    },
+                  ),
+                ],
               ),
             );
           }
@@ -87,7 +101,7 @@ class HomePage extends GetView<HomeController> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: StreamBuilder<List<UserModel>>(
+        child: StreamBuilder<List<ChatModel>>(
           stream: controller.getStreamUser(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -100,39 +114,43 @@ class HomePage extends GetView<HomeController> {
               );
             } else {
               final userList = snapshot.data ?? [];
-              return FutureBuilder<UserModel?>(
-                future: controller.getCurrentUser(),
-                builder: (context, senderSnapshot) {
-                  if (senderSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    final sender = senderSnapshot.data;
-                    return ListView.separated(
-                      itemBuilder: (context, index) {
-                        final user = userList[index];
-                        if (user.uid == sender?.uid) {
-                          return Container(); // Không hiển thị người dùng hiện tại
-                        }
-                        return GestureDetector(
-                          onTap: () {
-                            Get.to(
-                                  () => ChatPage(receiver: user, sender: sender),
-                            );
-                          },
-                          child: UserBox(
-                            userName: user.name.toString(),
-                            email: user.email.toString(),
-                          ),
+              if (userList.isEmpty) {
+                return const Center(
+                  child: Text('No chats found.'),
+                );
+              }
+              return Obx(() {
+                final sender = controller.currentUser.value;
+                if (sender == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return ListView.separated(
+                  itemBuilder: (context, index) {
+                    final user = userList[index];
+                    if (user.receiverUid == sender.uid) {
+                      return Container();
+                    }
+                    print(
+                        '${user.name} - ${user.timeSent} - ${user.lastMessage} - ${user.receiverUid}');
+                    return GestureDetector(
+                      onTap: () {
+                        Get.to(
+                          () => ChatPage(receiver: user, sender: sender),
                         );
                       },
-                      separatorBuilder: (context, index) => const SizedBox(
-                        height: 5,
+                      child: ChatBox(
+                        userName: user.name,
+                        lastMessage: user.lastMessage,
+                        timeSent: user.timeSent.toString().substring(10, 16),
                       ),
-                      itemCount: userList.length,
                     );
-                  }
-                },
-              );
+                  },
+                  separatorBuilder: (context, index) => const SizedBox(
+                    height: 5,
+                  ),
+                  itemCount: userList.length,
+                );
+              });
             }
           },
         ),

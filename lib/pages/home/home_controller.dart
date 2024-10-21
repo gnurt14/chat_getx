@@ -1,34 +1,29 @@
+import 'package:chat_getx/models/chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 import '../../models/user.dart';
 
-class HomeController extends GetxController{
+class HomeController extends GetxController {
   static HomeController get instance => Get.find();
-  final _fireStore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Rx<UserModel?> currentUser = Rx<UserModel?>(null);
 
   @override
   void onInit() {
     super.onInit();
+    fetchCurrentUser();
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-
-  Stream<List<UserModel>> getStreamUser() {
+  Stream<List<UserModel>> getDrawerUser() {
     return _fireStore.collection('users').snapshots().map((snapshot) {
-      List<UserModel> list = [];
       try {
-        for (var doc in snapshot.docs) {
-          list.add(UserModel.fromMap(doc.data()));
-          print('add ${doc.data()} to list');
-        }
-        return list;
+        return snapshot.docs
+            .map((doc) => UserModel.fromMap(doc.data()))
+            .toList();
       } catch (e) {
         print('Error: $e');
         return [];
@@ -36,19 +31,52 @@ class HomeController extends GetxController{
     });
   }
 
+  Stream<List<ChatModel>> getStreamUser() {
+    return _fireStore
+        .collection('users')
+        .doc(_auth.currentUser?.uid)
+        .collection('chats')
+        .snapshots()
+        .map((event) {
+      try {
+        List<ChatModel> listChat = [];
 
-  Future<UserModel?> getCurrentUser() async{
-    User? firebaseUser = _auth.currentUser;
+        for (var doc in event.docs) {
+          var chatModel = ChatModel.fromMap(doc.data());
+          listChat.add(chatModel);
+        }
 
-    if(firebaseUser != null){
-      DocumentSnapshot<Map<String, dynamic>> userDoc = await _fireStore.collection('users').doc(firebaseUser.uid).get();
-
-      if(userDoc.exists && userDoc.data() != null){
-        return UserModel.fromMap(userDoc.data()!);
+        print('Fetched ${listChat.length} chat contacts');
+        listChat.sort((a,b) => b.timeSent.compareTo(a.timeSent));
+        return listChat;
+      } catch (e) {
+        print('Error fetching chats: $e');
+        return [];
       }
-    }
-
-    return null;
+    });
   }
 
+
+  Future<void> fetchCurrentUser() async {
+    try {
+      User? firebaseUser = _auth.currentUser;
+      if (firebaseUser != null) {
+        DocumentSnapshot<Map<String, dynamic>> userDoc =
+        await _fireStore.collection('users').doc(firebaseUser.uid).get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          currentUser.value = UserModel.fromMap(userDoc.data()!);
+        }
+      }
+    } catch (e) {
+      print('Error fetching current user: $e');
+    }
+  }
+
+  Future<UserModel?> getCurrentUser() async {
+    if (currentUser.value == null) {
+      await fetchCurrentUser();
+    }
+    return currentUser.value;
+  }
 }

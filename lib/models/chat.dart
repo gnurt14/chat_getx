@@ -16,7 +16,7 @@ class ChatModel {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'receiverName': receiverUid,
+      'receiverUid': receiverUid,
       'timeSent': timeSent,
       'lastMessage': lastMessage,
     };

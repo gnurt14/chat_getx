@@ -53,35 +53,35 @@ class ChatController extends GetxController {
         .collection('messages')
         .orderBy('timeSent')
         .snapshots()
-        .asyncMap((event) async {
-          List<MessageModel> messageList = [];
-          try{
-            for(var document in event.docs){
-              messageList.add(MessageModel.fromMap(document.data()));
-            }
-            return messageList;
-          } catch (e){
-            print('Error get chat stream $e');
-            return [];
-          }
+        .map((event) {
+      try {
+        List<MessageModel> messageList = [];
+        for (var document in event.docs) {
+          messageList.add(MessageModel.fromMap(document.data()));
+        }
+        return messageList;
+      } catch (e) {
+        print('Error fetching chat messages: $e');
+        return [];
+      }
     });
   }
 
   void sendMessage({
     required String message,
-    required UserModel receiverData,
+    required ChatModel receiverData,
     required UserModel senderData,
   }) async {
     try {
       var timeSent = DateTime.now();
 
       var userDataMap =
-          await _firestore.collection('users').doc(receiverData.uid).get();
-      receiverData = UserModel.fromMap(userDataMap.data()!);
+          await _firestore.collection('users').doc(receiverData.receiverUid).get();
+      var receiverDataModel = UserModel.fromMap(userDataMap.data()!);
 
       _saveDataToContactSubCollection(
         senderData: senderData,
-        receiverData: receiverData,
+        receiverData: receiverDataModel,
         message: message,
         timeSent: timeSent,
       );
@@ -89,7 +89,7 @@ class ChatController extends GetxController {
       var messageId = const Uuid().v4();
 
       _saveMessageToSubMessageCollection(
-        receiverId: receiverData.uid.toString(),
+        receiverId: receiverDataModel.uid.toString(),
         message: message,
         timeSent: timeSent,
         messageId: messageId,
