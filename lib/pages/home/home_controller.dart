@@ -20,16 +20,22 @@ class HomeController extends GetxController{
   }
 
 
-  Future<List<UserModel>> fetchUser() async {
-    List<UserModel> list = [];
-    await _fireStore.collection('users').get().then((event){
-      for(var doc in event.docs){
-        list.add(UserModel.fromMap(doc.data()));
-        print('add ${doc.data()} to list');
+  Stream<List<UserModel>> getStreamUser() {
+    return _fireStore.collection('users').snapshots().map((snapshot) {
+      List<UserModel> list = [];
+      try {
+        for (var doc in snapshot.docs) {
+          list.add(UserModel.fromMap(doc.data()));
+          print('add ${doc.data()} to list');
+        }
+        return list;
+      } catch (e) {
+        print('Error: $e');
+        return [];
       }
     });
-    return list;
   }
+
 
   Future<UserModel?> getCurrentUser() async{
     User? firebaseUser = _auth.currentUser;

@@ -100,7 +100,6 @@ class ChatController extends GetxController {
       textController.clear();
       sendButton.value = false;
       update();
-      print('textcontroller is clear');
     } catch (e) {}
   }
 
@@ -113,7 +112,7 @@ class ChatController extends GetxController {
     var receiverChatContact = ChatModel(
       name: senderData.name.toString(),
       receiverUid: senderData.uid.toString(),
-      timeSent: timeSent.toString().substring(10, 16),
+      timeSent: timeSent,
       lastMessage: message,
     );
 
@@ -127,7 +126,7 @@ class ChatController extends GetxController {
     var senderChatContact = ChatModel(
       name: receiverData.name.toString(),
       receiverUid: receiverData.uid.toString(),
-      timeSent: timeSent.toString().substring(10, 16),
+      timeSent: timeSent,
       lastMessage: message,
     );
 

@@ -1,6 +1,7 @@
 import 'package:chat_getx/models/user.dart';
 import 'package:chat_getx/pages/chat/chat_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:get/get.dart';
 
 class ChatPage extends GetView<ChatController> {
@@ -67,20 +68,30 @@ class ChatPage extends GetView<ChatController> {
                           itemBuilder: (context, index) {
                             var message = snapshot.data![index];
                             bool isSender = message.senderId == sender?.uid;
-                            return Container(
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              decoration: BoxDecoration(
-                                color: isSender ? Colors.green : Colors.grey,
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(message.message),
-                                  Text(
-                                    message.timeSent
-                                        .toString()
-                                        .substring(10, 16),
+                            if(isSender) {
+                              return ChatBubble(
+                                clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
+                                alignment: Alignment.topLeft,
+                                margin: const EdgeInsets.only(top:10),
+                                backGroundColor: Colors.blue,
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    maxWidth: MediaQuery.of(context).size.width * 0.7,
                                   ),
-                                ],
+                                  child: Text(message.message),
+                                ),
+                              );
+                            }
+                            return ChatBubble(
+                              clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
+                              alignment: Alignment.topRight,
+                              margin: const EdgeInsets.only(top:10),
+                              backGroundColor: Colors.white,
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                                ),
+                                child: Text(message.message),
                               ),
                             );
                           },
@@ -99,7 +110,7 @@ class ChatPage extends GetView<ChatController> {
                         Expanded(
                           flex: 4,
                           child: TextField(
-                            style: const TextStyle(fontSize: 10),
+                            style: const TextStyle(fontSize: 14),
                             maxLines: null,
                             controller: messageController,
                             focusNode: controller.focusNode,

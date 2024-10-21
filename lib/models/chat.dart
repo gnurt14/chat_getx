@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ChatModel {
   final String name;
   final String receiverUid;
-  final String timeSent;
+  final DateTime timeSent;
   final String lastMessage;
 
   ChatModel({
@@ -24,8 +26,9 @@ class ChatModel {
     return ChatModel(
       name: map['name'] ?? '',
       receiverUid: map['receiverUid'] ?? '',
-      timeSent: map['timeSent'] ?? '',
+      timeSent: (map['timeSent'] as Timestamp).toDate(),
       lastMessage: map['lastMessage'] ?? '',
     );
   }
+
 }
